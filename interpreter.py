@@ -1,6 +1,6 @@
 import hunt_kill_maze_algo
 
-def interpreter(trad: str):
+def interpreter(trad: list[str]):
     for i in trad:
         if (i in "02468ACE"):
             print("|  |", end="")
@@ -26,7 +26,7 @@ def interpreter(trad: str):
 
 
 def main():
-    a = hunt_kill_maze_algo.Maze(10, 10, (0,0), 140)
+    a = hunt_kill_maze_algo.Maze(11, 7, (0,0), 140)
     a.hunt_kill_algo()
     for i in a.maze:
         print(i)

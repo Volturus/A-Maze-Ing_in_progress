@@ -1,25 +1,39 @@
 import random
 from typing import Optional
+import math
 
 
 class Maze:
     def __init__(self, width: int, height: int, start: tuple[int, int], seed: Optional[int] = None):
         random.seed(seed)
-        self.maze = self.create_empty_maze(width, height)
+        self.maze = []
+        self.list42 = []
+        self.create_empty_maze(width, height)
         self.current_coords = start
         self.last_coords = start
 
     def create_empty_maze(self, width: int, height: int):
-        maze = []
         for i in range(height):
-            maze += [["N"]*width]
-        return maze
-    
+            self.maze += [["N"]*width]
+        if (width >= 11 and height >= 7):
+            start = (math.floor(width/2) - 4, math.floor(height/2) - 2)
+            self.maze[start[1]] = ["N"]*start[0] + ["N"]*2 + ["D"] + ["3"] + ["N"]*2 + ["D"] + ["7"] + ["N"] + ["N"]*(width - start[0] - 9)
+            self.maze[start[1] + 1] = ["N"]*start[0] + ["N"] + ["F"] + ["B"] + ["A"] + ["N"] + ["F"] + ["N"]*2 + ["F"] + ["N"]*(width - start[0] - 9)
+            self.maze[start[1] + 2] = ["N"]*start[0] + ["B"] + ["D"] + ["6"] + ["A"] + ["N"]*3 + ["F"] + ["N"] + ["N"]*(width - start[0] - 9)
+            self.maze[start[1] + 3] = ["N"]*start[0] + ["C"] + ["5"]*2 + ["2"] + ["N"]*2 + ["B"] + ["N"]*2 + ["N"]*(width - start[0] - 9)
+            self.maze[start[1] + 4] = ["N"]*start[0] + ["N"]*3 + ["E"] + ["N"] + ["D"] + ["4"] + ["5"] + ["7"] + ["N"]*(width - start[0] - 9)
+            for y in range(height):
+                for x in range(width):
+                    if (self.maze[y][x] != "N"):
+                        self.list42 += [(x, y)]
+
     def check_surrounding(self, coords: tuple[int, int]) -> str:
         NESW = [0,0,0,0]
 
         if (coords[1] != 0):
-            if (self.last_coords == (coords[0], coords[1] - 1)):
+            if ((coords[0], coords[1] - 1) in self.list42):
+                NESW[0] = "L"
+            elif (self.last_coords == (coords[0], coords[1] - 1)):
                 NESW[0] = "P"
                 last_bit = bin(int(self.maze[self.last_coords[1]][self.last_coords[0]], 16))[2:]
                 while (len(last_bit) < 4):
@@ -32,7 +46,9 @@ class Maze:
             NESW[0] = "W"
 
         if (coords[0] != len(self.maze[coords[1]]) - 1):
-            if (self.last_coords == (coords[0] + 1, coords[1])):
+            if ((coords[0] + 1, coords[1]) in self.list42):
+                NESW[1] = "L"
+            elif (self.last_coords == (coords[0] + 1, coords[1])):
                 NESW[1] = "P"
                 last_bit = bin(int(self.maze[self.last_coords[1]][self.last_coords[0]], 16))[2:]
                 while (len(last_bit) < 4):
@@ -45,7 +61,9 @@ class Maze:
             NESW[1] = "W"
 
         if (coords[1] != len(self.maze) - 1):
-            if (self.last_coords == (coords[0], coords[1] + 1)):
+            if ((coords[0], coords[1] + 1) in self.list42):
+                NESW[2] = "L"
+            elif (self.last_coords == (coords[0], coords[1] + 1)):
                 NESW[2] = "P"
                 last_bit = bin(int(self.maze[self.last_coords[1]][self.last_coords[0]], 16))[2:]
                 while (len(last_bit) < 4):
@@ -58,7 +76,9 @@ class Maze:
             NESW[2] = "W"
 
         if (coords[0] != 0):
-            if (self.last_coords == (coords[0] - 1, coords[1])):
+            if ((coords[0] - 1 , coords[1]) in self.list42):
+                NESW[3] = "L"
+            elif (self.last_coords == (coords[0] - 1, coords[1])):
                 NESW[3] = "P"
                 last_bit = bin(int(self.maze[self.last_coords[1]][self.last_coords[0]], 16))[2:]
                 while (len(last_bit) < 4):
@@ -77,9 +97,14 @@ class Maze:
         for i in range(len(self.maze)):
             for j in range(len(self.maze[i])):
                 if (self.maze[i][j] == "N"):
-                    found = 1
-                    self.current_coords = (j, i)
-                    break
+                    NESW = self.check_surrounding((j,i))
+                    for x in NESW:
+                        if (x != "W" and x != "N" and x != "L"):
+                            found = 1
+                            self.current_coords = (j, i)
+                            break
+                    if (found == 1):
+                        break
             if (found == 1):
                 break
         if (found == 0):
@@ -88,7 +113,7 @@ class Maze:
         NESW = self.check_surrounding(self.current_coords)
         last_known = []
         for i in range(4):
-            if (NESW[i] != "W" and NESW[i] != "N"):
+            if (NESW[i] != "W" and NESW[i] != "N" and NESW[i] != "L"):
                 last_known += [i]
         previous = random.choice(last_known)
         if (previous == 0):
@@ -109,7 +134,7 @@ class Maze:
         for i in range(4):
             if (NESW[i] != "P"):
                 bit[3-i] = 1
-            if (NESW[i] ==  "N"):
+            if (NESW[i] == "N"):
                 unknown += [i]
         new = hex(int((str(bit[0]) + str(bit[1]) + str(bit[2]) + str(bit[3])), 2))[2]
         self.maze[coords[1]][coords[0]] = new.capitalize()
