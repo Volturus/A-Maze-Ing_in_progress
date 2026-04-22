@@ -20,8 +20,8 @@ class Maze:
 
         if (coords[1] != 0):
             if (self.last_coords == (coords[0], coords[1] - 1)):
+                NESW[0] = "P"
                 last_bit = bin(int(self.maze[self.last_coords[1]][self.last_coords[0]], 16))[2:]
-                print("N",last_bit)
                 while (len(last_bit) < 4):
                     last_bit = "0" + last_bit
                 new_bit = last_bit[0]+"0"+last_bit[2]+last_bit[3]
@@ -33,8 +33,8 @@ class Maze:
 
         if (coords[0] != len(self.maze[coords[1]]) - 1):
             if (self.last_coords == (coords[0] + 1, coords[1])):
+                NESW[1] = "P"
                 last_bit = bin(int(self.maze[self.last_coords[1]][self.last_coords[0]], 16))[2:]
-                print("E", last_bit)
                 while (len(last_bit) < 4):
                     last_bit = "0" + last_bit
                 new_bit = "0"+last_bit[1]+last_bit[2]+last_bit[3]
@@ -46,12 +46,11 @@ class Maze:
 
         if (coords[1] != len(self.maze) - 1):
             if (self.last_coords == (coords[0], coords[1] + 1)):
+                NESW[2] = "P"
                 last_bit = bin(int(self.maze[self.last_coords[1]][self.last_coords[0]], 16))[2:]
-                print("S", last_bit)
                 while (len(last_bit) < 4):
                     last_bit = "0" + last_bit
                 new_bit = last_bit[0]+last_bit[1]+last_bit[2]+"0"
-                print(new_bit, hex(int(new_bit, 2)).capitalize())
                 self.maze[self.last_coords[1]][self.last_coords[0]] = hex(int(new_bit, 2))[2:].capitalize()
             else:
                 NESW[2] = self.maze[coords[1] + 1][coords[0]]
@@ -60,8 +59,8 @@ class Maze:
 
         if (coords[0] != 0):
             if (self.last_coords == (coords[0] - 1, coords[1])):
+                NESW[3] = "P"
                 last_bit = bin(int(self.maze[self.last_coords[1]][self.last_coords[0]], 16))[2:]
-                print("W", last_bit)
                 while (len(last_bit) < 4):
                     last_bit = "0" + last_bit
                 new_bit = last_bit[0]+last_bit[1]+"0"+last_bit[3]
@@ -94,11 +93,11 @@ class Maze:
         previous = random.choice(last_known)
         if (previous == 0):
             self.last_coords = (self.current_coords[0], self.current_coords[1] - 1)
-        if (next == 1):
+        if (previous == 1):
             self.last_coords = ((self.current_coords[0] + 1, self.current_coords[1]))
-        if (next == 2):
+        if (previous == 2):
             self.last_coords = (self.current_coords[0], self.current_coords[1] + 1)
-        if (next == 3):
+        if (previous == 3):
             self.last_coords = (self.current_coords[0] - 1, self.current_coords[1])
         return (0)
 
@@ -108,23 +107,22 @@ class Maze:
         NESW = self.check_surrounding(coords)
         bit = [0,0,0,0]
         for i in range(4):
-            if (NESW[i] == "W" or NESW[i] == "N"):
+            if (NESW[i] != "P"):
                 bit[3-i] = 1
             if (NESW[i] ==  "N"):
                 unknown += [i]
-        print(self.current_coords)
-        print(bit)
         new = hex(int((str(bit[0]) + str(bit[1]) + str(bit[2]) + str(bit[3])), 2))[2]
         self.maze[coords[1]][coords[0]] = new.capitalize()
         self.last_coords = coords
         if (len(unknown) == 0):
             if (self.hunt() == 0):
+                print("!!!", self.last_coords, bit)
                 self.hunt_kill_algo()
             else:
+                print("???", self.current_coords)
                 return
         else:
             next = random.choice(unknown)
-            print(next, unknown)
             if (next == 0):
                 self.current_coords = (coords[0], coords[1] - 1)
                 self.hunt_kill_algo()
