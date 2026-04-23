@@ -17,11 +17,11 @@ class Maze:
             self.maze += [["N"]*width]
         if (width >= 11 and height >= 7):
             start = (math.floor(width/2) - 4, math.floor(height/2) - 2)
-            self.maze[start[1]] = ["N"]*start[0] + ["N"]*2 + ["D"] + ["3"] + ["N"]*2 + ["D"] + ["7"] + ["N"] + ["N"]*(width - start[0] - 9)
-            self.maze[start[1] + 1] = ["N"]*start[0] + ["N"] + ["F"] + ["B"] + ["A"] + ["N"] + ["F"] + ["N"]*2 + ["F"] + ["N"]*(width - start[0] - 9)
-            self.maze[start[1] + 2] = ["N"]*start[0] + ["B"] + ["D"] + ["6"] + ["A"] + ["N"]*3 + ["F"] + ["N"] + ["N"]*(width - start[0] - 9)
-            self.maze[start[1] + 3] = ["N"]*start[0] + ["C"] + ["5"]*2 + ["2"] + ["N"]*2 + ["B"] + ["N"]*2 + ["N"]*(width - start[0] - 9)
-            self.maze[start[1] + 4] = ["N"]*start[0] + ["N"]*3 + ["E"] + ["N"] + ["D"] + ["4"] + ["5"] + ["7"] + ["N"]*(width - start[0] - 9)
+            self.maze[start[1]] = ["N"]*start[0] + ["B"] + ["N"]*2 + ["B"] + ["N"] + ["D"] + ["5"] + ["5"] + ["3"] + ["N"]*(width - start[0] - 9)
+            self.maze[start[1] + 1] = ["N"]*start[0] + ["A"] + ["N"]*2 + ["A"] + ["N"]*4 + ["A"] + ["N"]*(width - start[0] - 9)
+            self.maze[start[1] + 2] = ["N"]*start[0] + ["C"] + ["5"] + ["5"] + ["2"] + ["N"] + ["9"] + ["5"]*2 + ["6"] + ["N"]*(width - start[0] - 9)
+            self.maze[start[1] + 3] = ["N"]*start[0] + ["N"]*3 + ["A"] + ["N"] + ["A"] + ["N"]*3 + ["N"]*(width - start[0] - 9)
+            self.maze[start[1] + 4] = ["N"]*start[0] + ["N"]*3 + ["A"] + ["N"] + ["C"] + ["5"] + ["5"] + ["7"] + ["N"]*(width - start[0] - 9)
             for y in range(height):
                 for x in range(width):
                     if (self.maze[y][x] != "N"):
