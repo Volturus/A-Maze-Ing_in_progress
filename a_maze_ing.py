@@ -22,7 +22,6 @@ def make_choice():
             if (1 <= color_num <= 4):
                 main(color_num - 1)
             else:
-                print("2")
                 print('Invalid color choice. Please retry')
                 make_choice()
         except Exception:
