@@ -1,3 +1,4 @@
+from typing import Optional
 import hunt_kill_maze_algo
 
 
@@ -66,87 +67,64 @@ import hunt_kill_maze_algo
 #        ┼────┼    └────┘
 
 
-def interpreter(trad: list[str]):
-    for i in trad:
-        if (i in "02468ACE"):
-            print("|  |", end="")
-        elif (i in "13579BDF"):
-            print("|--|", end="")
-    print("")
-    for i in trad:
-        if (i in "0145"):
-            print("    ", end="")
-        elif (i in "ABEF"):
-            print("|  |", end="")
-        elif (i in "89CD"):
-            print("|   ", end="")
-        elif (i in "2367"):
-            print("   |", end="")
-    print("")
-    for i in trad:
-        if (i in "012389AB"):
-            print("|  |", end="")
-        elif (i in "4567CDEF"):
-            print("|--|", end="")
-    print("")
-
-
-def interpreter2(maze : list[list], start: int, exit: int):
+def interpreter(maze : list[list], start: int, exit: int, color_num : int):
     count = 0
-    couleur = "\033[0m"
+    spe_color  = "\033[0m"
+    color_list = ["\033[0;37m", "\033[0;31m", "\033[0;32m", "\033[0;34m"]
+    base_color = "\033[0m"
     for i in maze:
         for j in i:
             if (j in "04"):
-                print("┘    └", end="")
+                print(f"{color_list[color_num]}┘    └{base_color}", end="")
             if (j in "15"):
-                print(f"{couleur}──────\033[0m", end="")
+                print(f"{color_list[color_num]}──────{base_color}", end="")
             if (j in "26"):
-                print("┘    │", end="")
+                print(f"{color_list[color_num]}┘    │{base_color}", end="")
             if (j in "37"):
-                print("─────┐", end="")
+                print(f"{color_list[color_num]}─────┐{base_color}", end="")
             if (j in "8C"):
-                print("│    └", end="")
+                print(f"{color_list[color_num]}│    └{base_color}", end="")
             if (j in "9D"):
-                print("┌─────", end="")
+                print(f"{color_list[color_num]}┌─────{base_color}", end="")
             if (j in "AE"):
-                print("│    │", end="")
+                print(f"{color_list[color_num]}│    │{base_color}", end="")
             if (j in "BF"):
-                print("┌────┐", end="")
+                print(f"{color_list[color_num]}┌────┐{base_color}", end="")
         print("")
         for j in i:
             count += 1
             if (count == start):
-                couleur = "\033[0;34m"
+                spe_color = "\033[0;34m"
             elif (count == exit):
-                couleur = "\033[0;31m"
+                spe_color = "\033[0;31m"
             else:
-                couleur = "\033[0m"
+                spe_color = "\033[0m"
             if (j in "0145"):
-                print(f"  {couleur}██\033[0m  ", end="")
+                print(f"  {spe_color}██{base_color}  ", end="")
             if (j in "2367"):
-                print(f"  {couleur}██\033[0m │", end="")
+                print(f"  {spe_color}██ {color_list[color_num]}│{base_color}", end="")
             if (j in "89CD"):
-                print(f"│ {couleur}██\033[0m  ", end="")
+                print(f"{color_list[color_num]}│ {spe_color}██{base_color}  ", end="")
             if (j in "ABEF"):
-                print(f"│ {couleur}██\033[0m │", end="")
+                print(f"{color_list[color_num]}│ {spe_color}██ {color_list[color_num]}│{base_color}", end="")
         print("")
         for j in i:
             if (j in "01"):
-                print("┐    ┌", end="")
+                print(f"{color_list[color_num]}┐    ┌{base_color}", end="")
             if (j in "23"):
-                print("┐    │", end="")
+                print(f"{color_list[color_num]}┐    │{base_color}", end="")
             if (j in "45"):
-                print("──────", end="")
+                print(f"{color_list[color_num]}──────{base_color}", end="")
             if (j in "67"):
-                print("─────┘", end="")
+                print(f"{color_list[color_num]}─────┘{base_color}", end="")
             if (j in "89"):
-                print("│    ┌", end="")
+                print(f"{color_list[color_num]}│    ┌{base_color}", end="")
             if (j in "AB"):
-                print("│    │", end="")
+                print(f"{color_list[color_num]}│    │{base_color}", end="")
             if (j in "CD"):
-                print("└─────", end="")
+                print(f"{color_list[color_num]}└─────{base_color}", end="")
             if (j in "EF"):
-                print("└────┘", end="")
+                print(f"{color_list[color_num]}└────┘{base_color}", end="")
         print("")
 
 
@@ -155,9 +133,7 @@ def main():
     a.hunt_kill_algo()
     for i in a.maze:
         print(i)
-    for i in a.maze:
-        interpreter(i)
-    interpreter2(a.maze, 1, 224)
+    interpreter(a.maze, 1, 224)
 
 
 if __name__ == "__main__":
