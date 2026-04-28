@@ -1,19 +1,8 @@
-"""Configuration file parser for the A-Maze-ing maze generator.
-
-Parses and fully validates a KEY=VALUE config file, returning a MazeConfig
-dataclass. Raises ValueError with a descriptive message on any error.
-"""
-
 from __future__ import annotations
-
 import sys
 from dataclasses import dataclass, field
 from typing import Optional
 
-
-# ---------------------------------------------------------------------------
-# Data model
-# ---------------------------------------------------------------------------
 
 @dataclass
 class MazeConfig:

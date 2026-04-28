@@ -1,5 +1,4 @@
 from typing import Optional
-import hunt_kill_maze_algo
 
 
 # 0 =  ┘    └
@@ -126,15 +125,3 @@ def interpreter(maze : list[list], start: int, exit: int, color_num : int):
             if (j in "EF"):
                 print(f"{color_list[color_num]}└────┘{base_color}", end="")
         print("")
-
-
-def main():
-    a = hunt_kill_maze_algo.Maze(15, 15, (0,0), 140)
-    a.hunt_kill_algo()
-    for i in a.maze:
-        print(i)
-    interpreter(a.maze, 1, 224)
-
-
-if __name__ == "__main__":
-    main()
