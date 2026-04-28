@@ -1,4 +1,3 @@
-import hunt_kill_maze_algo
 import interpreter
 
 
@@ -35,7 +34,7 @@ def walk_indiv_path(maze: int, current_coords: tuple[int, int], previous_coords:
     return paths
 
 
-def find_shortest(maze: list[list], entry: tuple[int,int], exit: tuple[int,int]) -> list[list]:
+def find_shortest(maze: list[list], entry: tuple[int,int], exit: tuple[int,int]) -> list[tuple[int, int]]:
     maze_paths = []
     current_coords_mul = [entry]
     new_coords = []
@@ -88,16 +87,3 @@ def find_shortest(maze: list[list], entry: tuple[int,int], exit: tuple[int,int])
     for i in maze_paths:
         if exit in i:
             return i
-        
-
-
-
-def main():
-    a = hunt_kill_maze_algo.Maze(15, 15, (0,0), 150)
-    a.hunt_kill_algo()
-    # for i in a.maze:
-    #     print(i)
-    print(find_shortest(a.maze, (0,0), (14,14)))
-    interpreter.interpreter(a.maze, 1, 225, 0)
-
-main()

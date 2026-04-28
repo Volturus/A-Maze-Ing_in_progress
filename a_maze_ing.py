@@ -1,4 +1,5 @@
 from mazegen.maze import Maze
+import find_shortest
 import interpreter
 import output_file
 import parser
@@ -45,7 +46,6 @@ def transform_list(
 
 
 def main(color_num: Optional[int] = 0):
-    solution_list = [(2, 2), (3, 2)]
     try:
         maze_config = parser.parse_config("./config.txt")
         try:
@@ -57,6 +57,11 @@ def main(color_num: Optional[int] = 0):
                         maze_config.seed,
                         maze_config.perfect
                         )
+            solution_list = find_shortest.find_shortest(
+                maze.maze,
+                maze_config.entry,
+                maze_config.exit_
+                )
             num_entry = maze_config.entry[1] * maze_config.width \
                 + maze_config.entry[0] + 1
             num_exit = maze_config.exit_[1] * maze_config.width \
