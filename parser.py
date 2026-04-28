@@ -1,5 +1,4 @@
 from __future__ import annotations
-import sys
 from dataclasses import dataclass, field
 from typing import Optional
 
@@ -28,7 +27,15 @@ class MazeConfig:
     seed: Optional[int] = field(default=None)
     algorithm: Optional[str] = field(default=None)
 
-_MANDATORY_KEYS = {"WIDTH", "HEIGHT", "ENTRY", "EXIT", "OUTPUT_FILE", "PERFECT"}
+
+_MANDATORY_KEYS = {
+    "WIDTH",
+    "HEIGHT",
+    "ENTRY",
+    "EXIT",
+    "OUTPUT_FILE",
+    "PERFECT"
+    }
 
 
 def _parse_int(value: str, key: str) -> int:
@@ -130,6 +137,7 @@ def _check_in_bounds(
             f"{key} ({x}, {y}) is out of bounds for a "
             f"{width}x{height} maze"
         )
+
 
 def parse_config(path: str) -> MazeConfig:
     """Read, parse, and fully validate a maze configuration file.

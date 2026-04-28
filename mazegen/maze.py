@@ -59,9 +59,11 @@ class Maze:
                 self.maze[oy + dy][ox + dx] = cell
                 if cell != "N":
                     if ox + dx == self._entry[0] and oy + dy == self._entry[1]:
-                        raise ValueError(f"ENTRY {self._entry} overlaps 42 pattern")
+                        raise ValueError(f"ENTRY {self._entry}"
+                                         "overlaps 42 pattern")
                     if ox + dx == self._exit[0] and oy + dy == self._exit[1]:
-                        raise ValueError(f"EXIT {self._exit} overlaps 42 pattern")
+                        raise ValueError(f"EXIT {self._exit}"
+                                         "overlaps 42 pattern")
                     self.list42.add((ox + dx, oy + dy))
         self.hunt_kill_algo()
 
@@ -73,7 +75,10 @@ class Maze:
     def _open_passage(self, x: int, y: int, direction: int) -> None:
         nx, ny = x + _DX[direction], y + _DY[direction]
         self.maze[y][x] = self._clear_wall(self.maze[y][x], direction)
-        self.maze[ny][nx] = self._clear_wall(self.maze[ny][nx], _OPP[direction])
+        self.maze[ny][nx] = self._clear_wall(
+                                             self.maze[ny][nx],
+                                             _OPP[direction]
+                                             )
 
     def _check_surrounding(self, x: int, y: int) -> list[str]:
         result: list[str] = []
@@ -88,7 +93,10 @@ class Maze:
                 result.append("L")
             elif (nx, ny) == (lx, ly):
                 # Open the wall on the previous cell toward the current one.
-                self.maze[ly][lx] = self._clear_wall(self.maze[ly][lx], _OPP[d])
+                self.maze[ly][lx] = self._clear_wall(
+                                                     self.maze[ly][lx],
+                                                     _OPP[d]
+                                                     )
                 result.append("P")
             else:
                 result.append(self.maze[ny][nx])
@@ -168,15 +176,3 @@ class Maze:
                     and random.random() < loop_ratio
                 ):
                     self._open_passage(x, y, S)
-
-
-def main() -> None:
-    """Run a small maze and print the raw grid."""
-    a = Maze(4, 6, (0, 0), 150)
-    a.hunt_kill_algo()
-    for row in a.maze:
-        print(row)
-
-
-if __name__ == "__main__":
-    main()

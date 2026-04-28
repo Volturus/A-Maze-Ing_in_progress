@@ -1,8 +1,5 @@
-from typing import Optional
-
-
 # 0 =  ┘    └
-#        ██  
+#        ██
 #      ┐    ┌
 
 # 1 =  ┴────┴ ou ──────
@@ -15,7 +12,7 @@ from typing import Optional
 
 # 3 = ┴────┼ ou ─────┐
 #       ██ │      ██ │
-#     ┐    ├    ┐    │   
+#     ┐    ├    ┐    │
 
 # 4 = ┘    └ ou ┘    └
 #       ██        ██
@@ -34,11 +31,11 @@ from typing import Optional
 #     ┬────┼    ─────┘
 
 # 8 = ┤    └ ou │    └
-#     │ ██      │ ██  
+#     │ ██      │ ██
 #     ┤    ┌    │    ┌
 
 # 9 = ┼────┴ ou ┌─────
-#     │ ██      │ ██ 
+#     │ ██      │ ██
 #     ┤    ┌    │    ┌
 
 # 10/A = ┤    ├ ou │    │
@@ -50,11 +47,11 @@ from typing import Optional
 #        ┤    ├    │    │
 
 # 12/C = ┤    └ ou │    └
-#        │ ██      │ ██ 
+#        │ ██      │ ██
 #        ┼────┬    └─────
 
 # 13/D = ┼────┴ ou ┌─────
-#        │ ██      │ ██ 
+#        │ ██      │ ██
 #        ┼────┬    └─────
 
 # 14/E = ┤    ├ ou │    │
@@ -67,19 +64,20 @@ from typing import Optional
 
 
 def interpreter(
-        maze : list[list],
+        maze: list[list],
         start: int, exit: int,
-        color_num : int,
+        color_num: int,
         solution: list[int]
         ):
     count = 0
-    spe_color  = "\033[0m"
+    spe_color = "\033[0m"
     color_list = ["\033[0;37m", "\033[0;31m", "\033[0;32m", "\033[0;34m"]
     base_color = "\033[0m"
     for i in maze:
         for j in i:
             if (j in "04"):
-                print(f"{color_list[color_num]}┘    └{base_color}", end="")
+                print(
+                      f"{color_list[color_num]}┘    └{base_color}", end="")
             if (j in "15"):
                 print(f"{color_list[color_num]}──────{base_color}", end="")
             if (j in "26"):
@@ -108,11 +106,21 @@ def interpreter(
             if (j in "0145"):
                 print(f"  {spe_color}██{base_color}  ", end="")
             if (j in "2367"):
-                print(f"  {spe_color}██ {color_list[color_num]}│{base_color}", end="")
+                print(
+                      f"  {spe_color}██ {color_list[color_num]}│{base_color}",
+                      end=""
+                      )
             if (j in "89CD"):
-                print(f"{color_list[color_num]}│ {spe_color}██{base_color}  ", end="")
+                print(
+                      f"{color_list[color_num]}│ {spe_color}██{base_color}  ",
+                      end=""
+                      )
             if (j in "ABEF"):
-                print(f"{color_list[color_num]}│ {spe_color}██ {color_list[color_num]}│{base_color}", end="")
+                print(
+                      f"{color_list[color_num]}│ {spe_color}██"
+                      f" {color_list[color_num]}│{base_color}",
+                      end=""
+                      )
         print("")
         for j in i:
             if (j in "01"):
