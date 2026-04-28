@@ -48,7 +48,6 @@ class Maze:
             print("Maze too small to display the '42' pattern.")
             return
 
-        ox, oy = self.get_best_pattern_position()
         ox = math.floor(width / 2) - 4
         oy = math.floor(height / 2) - 2
 
