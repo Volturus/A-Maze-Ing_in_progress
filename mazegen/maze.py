@@ -28,6 +28,7 @@ class Maze:
         width: int,
         height: int,
         start: tuple[int, int],
+        end: tuple[int, int],
         seed: Optional[int] = None,
         perfect: bool = True,
     ) -> None:
@@ -37,6 +38,8 @@ class Maze:
         self.list42: set[tuple[int, int]] = set()
         self._width = width
         self._height = height
+        self._exit = end
+        self._entry = start
         self._current = start
         self._last = start
         self._create_empty_maze(width, height)
@@ -55,7 +58,12 @@ class Maze:
             for dx, cell in enumerate(row):
                 self.maze[oy + dy][ox + dx] = cell
                 if cell != "N":
+                    if ox + dx == self._entry[0] and oy + dy == self._entry[1]:
+                        raise ValueError(f"ENTRY {self._entry} overlaps 42 pattern")
+                    if ox + dx == self._exit[0] and oy + dy == self._exit[1]:
+                        raise ValueError(f"EXIT {self._exit} overlaps 42 pattern")
                     self.list42.add((ox + dx, oy + dy))
+        self.hunt_kill_algo()
 
     @staticmethod
     def _clear_wall(cell: str, direction: int) -> str:

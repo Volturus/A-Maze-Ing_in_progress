@@ -31,13 +31,24 @@ def make_choice():
         print("\nInvalid input. Please enter a number between 1 and 4")
     return
 
+def transform_list(solution_list: list[tuple[int,int]], width: int) -> list[int]:
+    res = []
+    for solution in solution_list:
+        res.append(solution[1] * width + solution[0] + 1)
+    return (res)
 
 def main(color_num: Optional[int] = 0):
-    maze_config = parser.parse_config("./config.txt")
-    maze = Maze(maze_config.width, maze_config.height, maze_config.entry, maze_config.seed, maze_config.perfect)
-    maze.hunt_kill_algo()
-    interpreter.interpreter(maze.maze, maze_config.entry[1]*maze_config.width + maze_config.entry[0] + 1, maze_config.exit_[1]*maze_config.width + maze_config.exit_[0] + 1, color_num)
-    output_file.output_file(maze, maze_config.entry, maze_config.exit_)
+    solution_list = [(2,2), (3,2)]
+    try:
+        maze_config = parser.parse_config("./config.txt")
+        try:
+            maze = Maze(maze_config.width, maze_config.height, maze_config.entry, maze_config.exit_, maze_config.seed, maze_config.perfect)
+            interpreter.interpreter(maze.maze, maze_config.entry[1]*maze_config.width + maze_config.entry[0] + 1, maze_config.exit_[1]*maze_config.width + maze_config.exit_[0] + 1, color_num, transform_list(solution_list, maze_config.width))
+            output_file.output_file(maze, maze_config.entry, maze_config.exit_)
+        except ValueError as e:
+            print(e)
+    except ValueError as e:
+        print(e)
     make_choice()
 
 

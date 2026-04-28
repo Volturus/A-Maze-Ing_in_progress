@@ -66,7 +66,12 @@ from typing import Optional
 #        ┼────┼    └────┘
 
 
-def interpreter(maze : list[list], start: int, exit: int, color_num : int):
+def interpreter(
+        maze : list[list],
+        start: int, exit: int,
+        color_num : int,
+        solution: list[int]
+        ):
     count = 0
     spe_color  = "\033[0m"
     color_list = ["\033[0;37m", "\033[0;31m", "\033[0;32m", "\033[0;34m"]
@@ -96,6 +101,8 @@ def interpreter(maze : list[list], start: int, exit: int, color_num : int):
                 spe_color = "\033[0;34m"
             elif (count == exit):
                 spe_color = "\033[0;31m"
+            elif (count in solution):
+                spe_color = "\033[38;5;205m"
             else:
                 spe_color = "\033[0m"
             if (j in "0145"):
