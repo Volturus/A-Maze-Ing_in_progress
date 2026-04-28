@@ -1,4 +1,39 @@
+"""Configuration file parser for A-Maze-ing.
+
+Reads a plain-text ``KEY=VALUE`` configuration file and returns a
+validated :class:`MazeConfig` dataclass ready for use by the maze
+generator.
+
+File format
+-----------
+* One ``KEY=VALUE`` pair per line.
+* Lines beginning with ``#`` are treated as comments and ignored.
+* Keys are case-insensitive (normalised to upper-case internally).
+* Unknown keys are silently accepted as long as all mandatory keys are
+  present.
+
+Mandatory keys
+~~~~~~~~~~~~~~
+``WIDTH``, ``HEIGHT``, ``ENTRY``, ``EXIT``, ``OUTPUT_FILE``, ``PERFECT``
+
+Optional keys
+~~~~~~~~~~~~~
+``SEED`` (integer), ``ALGORITHM`` (string)
+
+Example config file::
+
+    # Example maze configuration
+    WIDTH=20
+    HEIGHT=15
+    ENTRY=0,0
+    EXIT=19,14
+    OUTPUT_FILE=output_maze.txt
+    PERFECT=True
+    SEED=42
+"""
+
 from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import Optional
 
@@ -10,10 +45,10 @@ class MazeConfig:
     Attributes:
         width: Number of columns (cells).
         height: Number of rows (cells).
-        entry: (x, y) coordinates of the maze entrance.
-        exit_: (x, y) coordinates of the maze exit.
+        entry: ``(x, y)`` coordinates of the maze entrance.
+        exit_: ``(x, y)`` coordinates of the maze exit.
         output_file: Path to the output file.
-        perfect: Whether the maze must be a perfect maze.
+        perfect: Whether the maze must be a perfect (acyclic) maze.
         seed: Optional RNG seed for reproducibility.
         algorithm: Optional name of the generation algorithm.
     """
@@ -34,12 +69,12 @@ _MANDATORY_KEYS = {
     "ENTRY",
     "EXIT",
     "OUTPUT_FILE",
-    "PERFECT"
-    }
+    "PERFECT",
+}
 
 
 def _parse_int(value: str, key: str) -> int:
-    """Parse a string as a positive integer.
+    """Parse a string as a strictly positive integer.
 
     Args:
         value: Raw string value from the config file.
@@ -61,17 +96,17 @@ def _parse_int(value: str, key: str) -> int:
 
 
 def _parse_coord(value: str, key: str) -> tuple[int, int]:
-    """Parse a 'x,y' string as a pair of non-negative integers.
+    """Parse a ``'x,y'`` string as a pair of non-negative integers.
 
     Args:
-        value: Raw string value from the config file (expected 'x,y').
+        value: Raw string value from the config file (expected ``'x,y'``).
         key: Config key name (used in error messages).
 
     Returns:
-        A (x, y) tuple of non-negative integers.
+        A ``(x, y)`` tuple of non-negative integers.
 
     Raises:
-        ValueError: If the format is wrong or values are negative.
+        ValueError: If the format is wrong or either value is negative.
     """
     parts = value.split(",")
     if len(parts) != 2:
@@ -92,7 +127,7 @@ def _parse_coord(value: str, key: str) -> tuple[int, int]:
 
 
 def _parse_bool(value: str, key: str) -> bool:
-    """Parse a string as a boolean (True/False, case-insensitive).
+    """Parse a string as a boolean (``True``/``False``, case-insensitive).
 
     Args:
         value: Raw string value from the config file.
@@ -102,7 +137,7 @@ def _parse_bool(value: str, key: str) -> bool:
         The parsed boolean.
 
     Raises:
-        ValueError: If the value is neither 'true' nor 'false'.
+        ValueError: If the value is neither ``'true'`` nor ``'false'``.
     """
     lower = value.strip().lower()
     if lower == "true":
@@ -123,13 +158,14 @@ def _check_in_bounds(
     """Ensure a coordinate lies strictly inside the maze grid.
 
     Args:
-        coord: (x, y) pair to check.
+        coord: ``(x, y)`` pair to check.
         width: Maze width in cells.
         height: Maze height in cells.
         key: Config key name (used in error messages).
 
     Raises:
-        ValueError: If the coordinate is outside [0, width) x [0, height).
+        ValueError: If the coordinate is outside
+            ``[0, width) x [0, height)``.
     """
     x, y = coord
     if not (0 <= x < width and 0 <= y < height):
@@ -142,22 +178,20 @@ def _check_in_bounds(
 def parse_config(path: str) -> MazeConfig:
     """Read, parse, and fully validate a maze configuration file.
 
-    The file must contain one KEY=VALUE pair per line. Lines starting with
-    '#' are treated as comments and ignored. Unknown keys are silently
-    accepted as long as all mandatory keys are present.
-
-    Mandatory keys: WIDTH, HEIGHT, ENTRY, EXIT, OUTPUT_FILE, PERFECT.
-    Optional keys:  SEED (int), ALGORITHM (str).
+    The file must contain one ``KEY=VALUE`` pair per line.  Lines starting
+    with ``'#'`` are treated as comments and ignored.  Unknown keys are
+    silently accepted as long as all mandatory keys are present.
 
     Args:
         path: Path to the configuration file.
 
     Returns:
-        A fully validated MazeConfig dataclass.
+        A fully validated :class:`MazeConfig` dataclass.
 
     Raises:
         FileNotFoundError: If the file does not exist.
-        ValueError: If any key is missing, malformed, or logically invalid.
+        ValueError: If any key is missing, malformed, or logically invalid
+            (e.g. entry == exit, coordinates out of bounds).
     """
     raw: dict[str, str] = {}
 

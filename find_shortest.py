@@ -1,89 +1,105 @@
-import interpreter
+"""Shortest-path finder for the A-Maze-ing maze.
+
+Uses Breadth-First Search (BFS), which guarantees the shortest path
+in an unweighted grid.  Wall passability is determined by reading the
+source cell's own wall bits, not the neighbour's value.
+
+Cell bit layout (matching the Hunt-and-Kill generation algorithm):
+
+.. code-block:: text
+
+    bit 0 (LSB) = North wall closed
+    bit 1       = East  wall closed
+    bit 2       = South wall closed
+    bit 3       = West  wall closed
+
+A set bit means the wall is closed (cannot pass); a clear bit means open.
+"""
+
+from collections import deque
+
+# (dx, dy, wall_bit) for each of the four cardinal directions.
+# If the corresponding bit of the *source* cell is 0 (wall open), the move
+# is allowed.
+_DIRECTIONS = [
+    (0, -1, 0),   # North: dy=-1, check bit 0
+    (1,  0, 1),   # East:  dx=+1, check bit 1
+    (0,  1, 2),   # South: dy=+1, check bit 2
+    (-1, 0, 3),   # West:  dx=-1, check bit 3
+]
 
 
-def check_ways(maze: list[list], coords: tuple[int, int], previous_coords: list[tuple[int, int]]) -> str:
-    NESW = [0,0,0,0]
+def _can_move(
+    maze: list[list[str]],
+    x: int,
+    y: int,
+    direction: int,
+) -> bool:
+    """Return ``True`` if the wall in *direction* from ``(x, y)`` is open.
 
-    if (coords[1] != 0):
-        if (maze[coords[1] - 1][coords[0]] in "012389AB" and (coords[0], coords[1] - 1) not in previous_coords):
-            NESW[0] = 1
-    if (coords[0] != len(maze[coords[1]]) - 1):
-        if (maze[coords[1]][coords[0] + 1] in "01234567" and (coords[0] + 1, coords[1]) not in previous_coords):
-            NESW[1] = 1
-    if (coords[1] != len(maze) - 1):
-        if (maze[coords[1] + 1][coords[0]] in "02468ACE") and (coords[0], coords[1] + 1) not in previous_coords:
-            NESW[2] = 1
-    if (coords[0] != 0):
-        if (maze[coords[1]][coords[0] - 1] in "014589CD") and (coords[0] - 1, coords[1]) not in previous_coords:
-            NESW[3] = 1
-    return NESW
+    Checks the wall bit of the *source* cell rather than the neighbour so
+    that special pattern cells (which may store non-standard values) are
+    handled correctly.
 
+    Args:
+        maze: 2-D grid of single hex-digit strings.
+        x: Column of the source cell.
+        y: Row of the source cell.
+        direction: 0 = N, 1 = E, 2 = S, 3 = W.
 
-def walk_indiv_path(maze: int, current_coords: tuple[int, int], previous_coords: list[tuple[int, int]]) -> list[tuple[int,int]]:
-    NESW = check_ways(maze, current_coords, previous_coords)
-    paths = []
-    if (NESW[0] == 1):
-        paths += [(current_coords[0], current_coords[1] - 1)]
-    if (NESW[1] == 1):
-        paths += [(current_coords[0] + 1, current_coords[1])]
-    if (NESW[2] == 1):
-        paths += [(current_coords[0], current_coords[1] + 1)]
-    if (NESW[3] == 1):
-        paths += [(current_coords[0] - 1, current_coords[1])]
-    # print("#######", paths)
-    return paths
+    Returns:
+        ``True`` if the wall bit is 0 (open) and the neighbour lies within
+        the grid bounds.
+    """
+    dx, dy, bit = _DIRECTIONS[direction]
+    nx, ny = x + dx, y + dy
+    height = len(maze)
+    width = len(maze[0])
+    if not (0 <= nx < width and 0 <= ny < height):
+        return False
+    return not (int(maze[y][x], 16) >> bit) & 1
 
 
-def find_shortest(maze: list[list], entry: tuple[int,int], exit: tuple[int,int]) -> list[tuple[int, int]]:
-    maze_paths = []
-    current_coords_mul = [entry]
-    new_coords = []
-    passing = 0
-    test = 0
-    previous_coords = []
-    while (exit not in current_coords_mul):
-    # for x in range(21):
-        num_new_path = 0
-        num_suppr = -1
-        for i in range(len(current_coords_mul)):
-            if (walk_indiv_path(maze, current_coords_mul[i], previous_coords) != []):
-                # num_suppr = -1
-                new_coords += walk_indiv_path(maze, current_coords_mul[i], previous_coords)
-                # if (x == 13):
-                #     print("\n\n", i+num_new_path, current_coords_mul, "\n\n")
-                # print("#######", num_new_path)
-                if (maze_paths != []):
-                    current_maze_path = maze_paths[i+num_new_path]
-                else:
-                    test = 1
-                new_maze_path = []
-                for j in range(passing, len(new_coords)):
-                    if (test == 1):
-                        new_maze_path += [[new_coords[j]]]
-                    else:
-                        # print(current_maze_path)
-                        new_maze_path += [current_maze_path + [new_coords[j]]]
-                if (new_maze_path != []):
-                    maze_paths = maze_paths[:i+num_new_path] + new_maze_path + maze_paths[i+num_new_path+1:]
-                num_new_path += len(new_coords) - 1 - passing
-                for j in range(passing, len(new_coords)):
-                    passing += 1
-            else:
-                # print("@@@-----------------------------------------------------------------------------------------------")
-                num_new_path -= 1
-                num_suppr += 1
-                # print(i, len(maze_paths), len(current_coords_mul), num_suppr)
-                maze_paths.pop(i - num_suppr)
-        passing = 0
-        previous_coords = current_coords_mul
-        current_coords_mul = new_coords
-        new_coords = []
-        test = 0
-        # for i in maze_paths:
-        #     print("!!!", i)
-        # print("!!!!!", current_coords_mul)
-        # print("\n")
-    # print("\n\n\n", current_coords_mul, "\n", maze_paths)
-    for i in maze_paths:
-        if exit in i:
-            return i
+def find_shortest(
+    maze: list[list[str]],
+    entry: tuple[int, int],
+    exit_: tuple[int, int],
+) -> list[tuple[int, int]]:
+    """Find the shortest path from *entry* to *exit_* using BFS.
+
+    BFS on an unweighted grid guarantees that the first time *exit_* is
+    reached it is via the fewest possible steps.  Each queue item carries
+    the full path taken so far to avoid a separate parent-map reconstruction.
+
+    Args:
+        maze: 2-D grid of single hex-digit strings where each character
+            encodes the closed walls of that cell as a bitmask.
+        entry: ``(x, y)`` coordinates of the starting cell.
+        exit_: ``(x, y)`` coordinates of the target cell.
+
+    Returns:
+        A list of ``(x, y)`` tuples representing the shortest path from
+        *entry* to *exit_* inclusive.  Returns an empty list if no path
+        exists.
+    """
+    queue: deque[list[tuple[int, int]]] = deque()
+    queue.append([entry])
+    visited: set[tuple[int, int]] = {entry}
+
+    while queue:
+        path = queue.popleft()
+        x, y = path[-1]
+
+        if (x, y) == exit_:
+            return path
+
+        for direction in range(4):
+            dx, dy, _ = _DIRECTIONS[direction]
+            nx, ny = x + dx, y + dy
+            neighbour = (nx, ny)
+
+            if neighbour not in visited and _can_move(maze, x, y, direction):
+                visited.add(neighbour)
+                queue.append(path + [neighbour])
+
+    return []

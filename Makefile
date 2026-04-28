@@ -5,8 +5,8 @@ build:
 	poetry build
 
 install: build
-	pip install dist/*.whl --break-system-packages
-	pip install flake8 mypy --break-system-packages
+	pip install dist/*.whl
+	pip install flake8 mypy
 
 run:
 	python3 $(MAIN) $(CONFIG)
